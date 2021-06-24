@@ -1,0 +1,58 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group 'de.wuespace.telestion.terminal-client'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/wuespace/telestion-core/")
+        credentials {
+            username = System.getenv("GITHUB_ACTOR") == null ? GITHUB_ACTOR : System.getenv("GITHUB_ACTOR")
+            password = System.getenv("GITHUB_TOKEN") == null ? GITHUB_TOKEN : System.getenv("GITHUB_TOKEN")
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/wuespace/telestion-terminal-client"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            groupId = 'de.wuespace.telestion.terminal-client'
+            artifactId = 'telestion-terminal-client'
+            version = System.getenv("VERSION")
+
+            from components.java
+        }
+    }
+}
+
+dependencies {
+    implementation 'de.wuespace.telestion:telestion-api:1.0.0'
+    implementation 'de.wuespace.telestion:telestion-services:1.0.0'
+
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '6.6'
+
+    implementation "io.vertx:vertx-core:4.0.3"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
+}
+
+test {
+    useJUnitPlatform()
+}
