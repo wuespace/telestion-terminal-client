@@ -18,7 +18,7 @@ docker run -it <image_name>
 
 > Please ensure, you have an up-to-date version of **Java 16** installed and ready to go.
 
-1. Download the distribution package from the latest GitHub Release:
+1. Download the distribution package from the latest GitHub Release: \
    https://github.com/wuespace/telestion-terminal-client/releases/latest
    
 2. Extract it with your favorite archive tool:
