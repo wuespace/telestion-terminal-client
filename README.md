@@ -6,7 +6,7 @@ A Terminal Client for Telestion Projects
 
 ### Docker
 
-Please ensure, you have Docker installed and ready to go.
+> Please ensure, you have an up-to-date version of **Docker** installed and ready to go.
 
 Pull and run the latest Docker image from the GitHub Container Registry:
 ```
@@ -14,32 +14,47 @@ docker pull <image_name>
 docker run -it <image_name>
 ```
 
+### Native
+
+> Please ensure, you have an up-to-date version of **Java 16** installed and ready to go.
+
+1. Download the distribution package from the latest GitHub Release:
+   https://github.com/wuespace/telestion-terminal-client/releases/latest
+   
+2. Extract it with your favorite archive tool:
+   ```
+   unzip telestion-terminal-client.zip -d telestion-terminal-client
+   tar -xf telestion-terminal-client.tar
+   ```
+
+3. Execute the binary suited for your system located in the `bin` folder.
+
 ### Building from source
 
-**Please ensure, you have Java 16 installed and ready to go.**
+> Please ensure, you have an up-to-date version of **Java 16** installed and ready to go.
 
 1. Clone the project:
-```
-git clone git@github.com:wuespace/telestion-terminal-client.git
-```
+   ```
+   git clone git@github.com:wuespace/telestion-terminal-client.git
+   ```
 
 2. Set up the Personal Access Token which allows gradle to load the Telestion Dependencies.
-   (see )
+   (see [Contributing](#contributing))
 
 2. Build the project with gradle:
-```
-./gradlew assembleDist
-```
+   ```
+   ./gradlew assembleDist
+   ```
 
 3. Build the docker image:
-```
-docker build -t <image_name> .
-```
+   ```
+   docker build -t <image_name> .
+   ```
 
 4. Run the docker image:
-```
-docker run -it <image_name>
-```
+   ```
+   docker run -it <image_name>
+   ```
 
 ## Introduction
 

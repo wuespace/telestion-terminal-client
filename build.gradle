@@ -1,9 +1,17 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'application'
 }
 
-group 'de.wuespace.telestion.terminal-client'
+group 'de.wuespace.telestion.terminal_client'
+
+sourceCompatibility = gradle.sourceCompatibility
+targetCompatibility = gradle.targetCompatibility
+
+application {
+    mainClass.set('de.wuespace.telestion.terminal_client.Main')
+}
 
 repositories {
     mavenCentral()
@@ -13,28 +21,6 @@ repositories {
         credentials {
             username = System.getenv("GITHUB_ACTOR") == null ? GITHUB_ACTOR : System.getenv("GITHUB_ACTOR")
             password = System.getenv("GITHUB_TOKEN") == null ? GITHUB_TOKEN : System.getenv("GITHUB_TOKEN")
-        }
-    }
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/wuespace/telestion-terminal-client"
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-    publications {
-        gpr(MavenPublication) {
-            groupId = 'de.wuespace.telestion.terminal-client'
-            artifactId = 'telestion-terminal-client'
-            version = System.getenv("VERSION")
-
-            from components.java
         }
     }
 }
