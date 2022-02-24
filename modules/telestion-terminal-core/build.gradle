@@ -1,0 +1,33 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+ext {
+    prettyName = 'Terminal Client Core'
+}
+
+description = 'The core components of the Telestion Terminal Client'
+
+dependencies {
+    api project(':modules:vertx-event-bus')
+
+    implementation 'com.google.guava:guava:31.0.1-jre'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation 'org.hamcrest:hamcrest-library:2.2'
+    testImplementation "org.mockito:mockito-core:4.+"
+}
+
+test {
+    useJUnitPlatform()
+}

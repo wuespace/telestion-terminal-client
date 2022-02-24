@@ -1,44 +1,154 @@
-plugins {
-    id 'java'
-    id 'maven-publish'
-    id 'application'
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 }
 
-group 'de.wuespace.telestion.terminal_client'
+subprojects {
+    apply plugin: 'application'
+    apply plugin: 'signing'
+    apply plugin: 'maven-publish'
 
-sourceCompatibility = gradle.sourceCompatibility
-targetCompatibility = gradle.targetCompatibility
+    sourceCompatibility = gradle.sourceCompatibility
+    targetCompatibility = gradle.targetCompatibility
 
-application {
-    mainClass.set('de.wuespace.telestion.terminal_client.Main')
-}
+    version = gradle.ext.version
+    group 'de.wuespace.telestion'
 
-repositories {
-    mavenCentral()
-    maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/wuespace/telestion-core/")
-        credentials {
-            username = System.getenv("GITHUB_ACTOR") == null ? GITHUB_ACTOR : System.getenv("GITHUB_ACTOR")
-            password = System.getenv("GITHUB_TOKEN") == null ? GITHUB_TOKEN : System.getenv("GITHUB_TOKEN")
+    javadoc {
+        options.addBooleanOption('html5', true)
+    }
+
+    tasks.withType(JavaExec) {
+        systemProperties System.properties
+        systemProperties "hazelcast.logging.type": "slf4j"
+
+        // enable modules for hazelcast
+        jvmArgs += ["--add-modules", "java.se",
+                    "--add-exports", "java.base/jdk.internal.ref=ALL-UNNAMED",
+                    "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+                    "--add-opens", "java.base/java.nio=ALL-UNNAMED",
+                    "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED",
+                    "--add-opens", "java.management/sun.management=ALL-UNNAMED",
+                    "--add-opens", "jdk.management/com.sun.management.internal=ALL-UNNAMED"]
+    }
+
+    jar {
+        metaInf {
+            from("$projectDir/../../LICENSE")
+        }
+
+        afterEvaluate {
+            manifest {
+
+                var description = Objects.nonNull(project.description) ? project.description : 'No description'
+                var specTitle = project.extensions.extraProperties.has('prettyName')
+                        ? project.extensions.extraProperties.get('prettyName')
+                        : 'Telestion Terminal Client Module'
+
+                attributes(
+                        'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+                        'Created-By': "Gradle ${gradle.gradleVersion}",
+                        'Build-Jdk': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+                        'Build-Jdk-Spec': "${System.properties['java.version']}",
+                        'Build-OS': "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}",
+                        'Specification-Title': specTitle,
+                        'Specification-Version': project.version,
+                        'Specification-Vendor': 'WueSpace e.V.',
+                        'Implementation-Title': project.name,
+                        'Implementation-Version': project.version,
+                        'Implementation-Vendor': 'de.wuespace.telestion',
+                        'X-Compile-Target-JDK': gradle.ext.targetCompatibility,
+                        'X-Compile-Source-JDK': gradle.ext.sourceCompatibility,
+                        'Description': description
+                )
+            }
+        }
+    }
+
+    publishing {
+        afterEvaluate {
+            publications {
+                maven(MavenPublication) {
+                    from components.java
+
+                    pom {
+                        name = project.name
+                        description = project.description
+                        url = 'https://telestion.wuespace.de/'
+
+                        licenses {
+                            license {
+                                name = 'MIT License'
+                                url = 'https://opensource.org/licenses/mit-license.php'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id = 'fussel178'
+                                name = 'Ludwig Richter'
+                                email = 'riluzm@posteo.de'
+                                url = 'https://github.com/fussel178'
+                                organization = 'WüSpace e. V.'
+                                organizationUrl = 'https://www.wuespace.de/'
+                            }
+                        }
+
+                        scm {
+                            connection = 'scm:git:git://github.com/wuespace/telestion-terminal-client.git'
+                            developerConnection = 'scm:git:ssh://git@github.com:wuespace/telestion-terminal-client.git'
+                            url = 'https://github.com/wuespace/telestion-terminal-client/tree/main'
+                        }
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                url "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+
+                credentials {
+                    username = System.getenv('OSSRH_USERNAME')
+                    password = System.getenv('OSSRH_PASSWORD')
+                }
+            }
+
+            maven {
+                name = "GitHubPackages"
+                url = "https://maven.pkg.github.com/wuespace/telestion-terminal-client"
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+    }
+
+    signing {
+        afterEvaluate {
+            required { gradle.forceSign || gradle.taskGraph.hasTask('publish') }
+            // get key + key-id + password
+            def signingKeyId = findProperty('signingKeyId') as String
+            def signingKey = findProperty('signingKey') as String
+            def signingPassword = findProperty('signingPassword') as String
+            // decrypt key
+            useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+            // sign
+            sign publishing.publications.maven
         }
     }
 }
 
-dependencies {
-    implementation 'de.wuespace.telestion:telestion-api:0.7.1'
-    implementation 'de.wuespace.telestion:telestion-services:0.7.1'
-
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.36'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
-    implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.0.1'
-
-    implementation "io.vertx:vertx-core:4.2.5"
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+task alljavadoc(type: Javadoc) {
+    def subProjects = gradle.rootProject.subprojects
+    source subProjects.collect { Project project -> project.sourceSets.main.allJava }
+    classpath = files(subProjects.collect { Project project -> project.sourceSets.main.compileClasspath })
+    destinationDir = file("${buildDir}/docs/javadoc")
 }
 
-test {
-    useJUnitPlatform()
+configure(alljavadoc) {
+    group = 'documentation'
+    description = 'Generates Javadoc API for all subprojects into one destination.'
 }
