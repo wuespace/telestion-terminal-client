@@ -22,7 +22,7 @@ dependencies {
     api group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
     api group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.0.1'
 
-    api group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.0'
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.1'
     api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.1'
     api 'io.vertx:vertx-eventbus-bridge-client:1.0.1'
 
