@@ -23,7 +23,7 @@ dependencies {
     api group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.1.1'
 
     api group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.2'
-    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.2.2'
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.3'
     api 'io.vertx:vertx-eventbus-bridge-client:1.0.1'
 
     implementation 'com.google.guava:guava:31.1-jre'
