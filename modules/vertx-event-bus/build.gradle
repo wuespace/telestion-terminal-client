@@ -18,7 +18,7 @@ ext {
 description = 'The Vert.x event bus client for the Telestion Terminal Client'
 
 dependencies {
-    api group: 'org.slf4j', name: 'slf4j-api', version: '1.7.36'
+    api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.2'
     api group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.11'
     api group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.2'
 
